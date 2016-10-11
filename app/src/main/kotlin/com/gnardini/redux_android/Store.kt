@@ -5,13 +5,14 @@ import com.gnardini.redux_android.base.Command
 import com.gnardini.redux_android.base.State
 import com.gnardini.redux_android.base.StateManager
 
-class Store<S: State, A: Action, C: Command> (val stateManager: StateManager<S, A, C>) {
+class Store<StateType: State, ActionType: Action, CommandType : Command>(
+        val stateManager: StateManager<StateType, ActionType, CommandType>) {
 
-    private var state: S = stateManager.initialState()
-    private var subscribers = mutableListOf<(S) -> Unit>()
+    private var state: StateType = stateManager.initialState()
+    private val subscribers = mutableListOf<(StateType) -> Unit>()
 
-    fun dispatchAction(action: A) {
-        val result : Pair<S, C> = stateManager.update(state, action)
+    fun dispatchAction(action: ActionType) {
+        val result : Pair<StateType, CommandType> = stateManager.update(state, action)
         this.state = result.first
 
         stateManager.applyCommand(state, result.second)
@@ -20,7 +21,7 @@ class Store<S: State, A: Action, C: Command> (val stateManager: StateManager<S, 
         subscribers.forEach { it.invoke(this.state) }
     }
 
-    fun subscribe(subscriber: (S) -> Unit) {
+    fun subscribe(subscriber: (StateType) -> Unit) {
         subscribers.add(subscriber)
     }
 
