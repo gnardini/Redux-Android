@@ -42,13 +42,13 @@ class PickFriendsReducer(override val initialState: PickFriendsState =
 
     fun onPeopleLoadFailed(state: PickFriendsState): PickFriendsState = state
 
-    fun onPersonChosen(state: PickFriendsState, personState: PersonState, selected: Boolean):
+    fun onPersonChosen(state: PickFriendsState, chosenPersonState: PersonState, selected: Boolean):
             PickFriendsState {
-        val contacts = state.contacts.map { contactState ->
-            if (contactState.person == personState.person) {
-                PersonState(contactState.person, selected)
+        val contacts = state.contacts.map { personState ->
+            if (personState.person == chosenPersonState.person) {
+                PersonState(personState.person, selected)
             } else {
-                contactState
+                personState
             }
         }
         return state.copy(contacts = contacts)

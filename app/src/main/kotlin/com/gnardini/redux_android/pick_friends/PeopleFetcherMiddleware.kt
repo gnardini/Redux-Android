@@ -8,6 +8,7 @@ import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 
+// Mock a 1 second delay for the API call and return the list of people.
 fun PickFriendsView.peopleFetcher() = { store: Store<PickFriendsState, PickFriendsAction>,
                                         action: PickFriendsAction ->
     if (action is PickFriendsAction.FetchPeople) {
