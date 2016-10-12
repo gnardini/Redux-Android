@@ -1,15 +1,16 @@
 package com.gnardini.redux_android.pick_friends
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatCheckBox
 import android.support.v7.widget.RecyclerView
 import android.widget.CompoundButton
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.gnardini.redux_android.Store
-import com.gnardini.redux_android.pick_friends.PickFriendsStateManager.*
+import com.gnardini.redux_android.pick_friends.PickFriendsReducer.PickFriendsAction
+import com.gnardini.redux_android.pick_friends.PickFriendsReducer.PickFriendsState
 import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
 import trikita.anvil.RenderableAdapter
@@ -19,15 +20,14 @@ import trikita.anvil.recyclerview.v7.RecyclerViewv7DSL
 import trikita.anvil.recyclerview.v7.RecyclerViewv7DSL.linearLayoutManager
 import trikita.anvil.recyclerview.v7.RecyclerViewv7DSL.recyclerView
 
-class PickFriendsActivity : AppCompatActivity() {
-
-    val store: Store<PickFriendsState, PickFriendsAction, PickFriendsCommand> =
-            Store(PickFriendsStateManager())
+class PickFriendsView(val store: Store<PickFriendsState, PickFriendsAction>, context: Context) :
+        FrameLayout(context) {
 
     var peopleAdapter = peopleAdapter()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    init {
+        store.hookMiddleware(peopleFetcher())
+        store.hookMiddleware(peopleListRefresher())
         store.subscribe { stateUpdated() }
         populateView()
         store.dispatchAction(PickFriendsAction.FetchPeople)
@@ -38,7 +38,7 @@ class PickFriendsActivity : AppCompatActivity() {
     }
 
     fun populateView() {
-        Anvil.mount(findViewById(android.R.id.content)) {
+        Anvil.mount(this) {
             recyclerView {
                 linearLayoutManager()
                 RecyclerViewv7DSL.adapter(peopleAdapter)
@@ -86,9 +86,9 @@ class PickFriendsActivity : AppCompatActivity() {
                 }
             })
 
-    class PersonAdapter(val store: Store<PickFriendsState, PickFriendsAction, PickFriendsCommand>,
-                        val renderer: RenderableAdapter.Item<PickFriendsStateManager.PersonState>)
-            : RenderableRecyclerViewAdapter() {
+    class PersonAdapter(val store: Store<PickFriendsState, PickFriendsAction>,
+                        val renderer: RenderableAdapter.Item<PickFriendsReducer.PersonState>) :
+            RenderableRecyclerViewAdapter() {
 
         private fun items() = store.getState().contacts
 

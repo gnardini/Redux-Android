@@ -1,24 +1,26 @@
 package com.gnardini.redux_android
 
 import com.gnardini.redux_android.base.Action
-import com.gnardini.redux_android.base.Command
+import com.gnardini.redux_android.base.Reducer
 import com.gnardini.redux_android.base.State
-import com.gnardini.redux_android.base.StateManager
 
-class Store<StateType: State, ActionType: Action, CommandType : Command>(
-        val stateManager: StateManager<StateType, ActionType, CommandType>) {
+class Store<StateType: State, ActionType: Action>(
+        val reducer: Reducer<StateType, ActionType>) {
 
-    private var state: StateType = stateManager.initialState()
+    private var state: StateType = reducer.initialState
     private val subscribers = mutableListOf<(StateType) -> Unit>()
+    private val middleware = mutableListOf<(Store<StateType, ActionType>, ActionType) -> Unit>()
 
     fun dispatchAction(action: ActionType) {
-        val result : Pair<StateType, CommandType> = stateManager.update(state, action)
-        this.state = result.first
+        middleware.forEach { it.invoke(this, action) }
 
-        stateManager.applyCommand(state, result.second)
-                .forEach { action -> dispatchAction(action) }
+        state = reducer.update(state, action)
 
         subscribers.forEach { it.invoke(this.state) }
+    }
+
+    fun hookMiddleware(middleware: (Store<StateType, ActionType>, ActionType) -> Unit) {
+        this.middleware.add(middleware)
     }
 
     fun subscribe(subscriber: (StateType) -> Unit) {

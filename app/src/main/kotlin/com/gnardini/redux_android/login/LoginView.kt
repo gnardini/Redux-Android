@@ -1,35 +1,30 @@
 package com.gnardini.redux_android.login
 
+import android.content.Context
 import android.graphics.Color
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.Toast
 import com.gnardini.redux_android.Store
 import com.gnardini.redux_android.login.LoginAction.EmailChanged
 import com.gnardini.redux_android.login.LoginAction.PasswordChanged
 import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
 
-class LoginActivity : AppCompatActivity() {
+class LoginView(val store: Store<LoginState, LoginAction>, context: Context) :
+        FrameLayout(context) {
 
-    val store: Store<LoginState, LoginAction, LoginCommand> = Store(LoginStateManager())
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    init {
+        store.hookMiddleware(loginMiddleware())
         store.subscribe { stateUpdated() }
         populateView()
     }
 
     fun stateUpdated() {
         Anvil.render()
-        store.getState().toastMessage?.let { message ->
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        }
     }
 
     fun populateView() {
-        Anvil.mount(findViewById(android.R.id.content)) {
+        Anvil.mount(this) {
             linearLayout {
                 orientation(LinearLayout.VERTICAL)
                 gravity(CENTER)
@@ -50,7 +45,8 @@ class LoginActivity : AppCompatActivity() {
                     text(store.getState().passwordText)
                     textColor(Color.GRAY)
                     onTextChanged {
-                        password -> store.dispatchAction(PasswordChanged(password.toString()))
+                        password ->
+                        store.dispatchAction(PasswordChanged(password.toString()))
                     }
                 }
 

@@ -7,6 +7,7 @@ sealed class LoginAction : Action {
     object LoginPressed: LoginAction()
     class EmailChanged(val email: String) : LoginAction()
     class PasswordChanged(val password: String) : LoginAction()
-    class LoginResult(val success: Boolean) : LoginAction()
+    class LoginSuccess() : LoginAction()
+    class LoginFailed() : LoginAction()
 
 }
