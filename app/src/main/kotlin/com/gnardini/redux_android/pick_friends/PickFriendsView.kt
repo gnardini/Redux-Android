@@ -12,6 +12,7 @@ import com.gnardini.redux_android.Store
 import com.gnardini.redux_android.pick_friends.PickFriendsReducer.PickFriendsAction
 import com.gnardini.redux_android.pick_friends.PickFriendsReducer.PickFriendsState
 import com.gnardini.redux_android.repository.UsersRepository
+import rx.Subscription
 import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
 import trikita.anvil.RenderableAdapter
@@ -28,11 +29,12 @@ class PickFriendsView(
         FrameLayout(context) {
 
     var peopleAdapter = peopleAdapter()
+    val stateSubscription: Subscription
 
     init {
         store.bindMiddleware(peopleFetcher(usersRepository))
         store.bindMiddleware(peopleListRefresher())
-        store.subscribe { stateUpdated() }
+        stateSubscription = store.observeState().subscribe { state -> stateUpdated() }
         populateView()
         store.dispatchAction(PickFriendsAction.FetchPeople)
     }
@@ -89,6 +91,11 @@ class PickFriendsView(
                     }
                 }
             })
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        stateSubscription.unsubscribe()
+    }
 
     class PersonAdapter(val store: Store<PickFriendsState, PickFriendsAction>,
                         val renderer: RenderableAdapter.Item<PickFriendsReducer.PersonState>) :

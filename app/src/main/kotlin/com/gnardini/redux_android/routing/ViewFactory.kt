@@ -10,7 +10,7 @@ import com.gnardini.redux_android.pick_friends.PickFriendsView
 
 fun Router.loginView(): LoginView {
     val store = Store(LoginReducer())
-    store.subscribe(logSubscription())
+    store.observeState().subscribe(logSubscription())
 
     store.bindMiddleware { store, action ->
         if (action is LoginAction.LoginSuccess) {
@@ -23,6 +23,6 @@ fun Router.loginView(): LoginView {
 
 fun Router.pickFriendsView(): PickFriendsView {
     val store = Store(PickFriendsReducer())
-    store.subscribe(logSubscription())
+    store.observeState().subscribe(logSubscription())
     return PickFriendsView(store, networkInjector.usersRepository, viewContainer.context)
 }

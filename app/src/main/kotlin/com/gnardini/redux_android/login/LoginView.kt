@@ -8,6 +8,7 @@ import com.gnardini.redux_android.Store
 import com.gnardini.redux_android.login.LoginAction.EmailChanged
 import com.gnardini.redux_android.login.LoginAction.PasswordChanged
 import com.gnardini.redux_android.repository.UsersRepository
+import rx.Subscription
 import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
 
@@ -16,9 +17,11 @@ class LoginView(
         usersRepository: UsersRepository,
         context: Context) : FrameLayout(context) {
 
+    val stateSubscription: Subscription
+
     init {
         store.bindMiddleware(loginMiddleware(usersRepository))
-        store.subscribe { stateUpdated() }
+        stateSubscription = store.observeState().subscribe { state -> stateUpdated() }
         populateView()
     }
 
@@ -64,6 +67,11 @@ class LoginView(
                 }
             }
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        stateSubscription.unsubscribe()
     }
 
 }
