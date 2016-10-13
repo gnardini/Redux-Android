@@ -7,6 +7,8 @@ interface ViewContainer {
 
     val context: Context
 
+    fun setOnBackPressListener(goBack: () -> Unit)
+
     fun drawView(view: View)
 
     fun finish()

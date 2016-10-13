@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import com.gnardini.redux_android.Store
 import com.gnardini.redux_android.pick_friends.PickFriendsReducer.PickFriendsAction
 import com.gnardini.redux_android.pick_friends.PickFriendsReducer.PickFriendsState
+import com.gnardini.redux_android.repository.UsersRepository
 import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
 import trikita.anvil.RenderableAdapter
@@ -20,14 +21,17 @@ import trikita.anvil.recyclerview.v7.RecyclerViewv7DSL
 import trikita.anvil.recyclerview.v7.RecyclerViewv7DSL.linearLayoutManager
 import trikita.anvil.recyclerview.v7.RecyclerViewv7DSL.recyclerView
 
-class PickFriendsView(val store: Store<PickFriendsState, PickFriendsAction>, context: Context) :
+class PickFriendsView(
+        val store: Store<PickFriendsState, PickFriendsAction>,
+        usersRepository: UsersRepository,
+        context: Context) :
         FrameLayout(context) {
 
     var peopleAdapter = peopleAdapter()
 
     init {
-        store.hookMiddleware(peopleFetcher())
-        store.hookMiddleware(peopleListRefresher())
+        store.bindMiddleware(peopleFetcher(usersRepository))
+        store.bindMiddleware(peopleListRefresher())
         store.subscribe { stateUpdated() }
         populateView()
         store.dispatchAction(PickFriendsAction.FetchPeople)

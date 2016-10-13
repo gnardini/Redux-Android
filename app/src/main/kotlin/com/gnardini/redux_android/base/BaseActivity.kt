@@ -1,20 +1,18 @@
 package com.gnardini.redux_android.base
 
-import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
-import com.gnardini.redux_android.routing.Router
 import com.gnardini.redux_android.routing.ViewContainer
 
 class BaseActivity: AppCompatActivity(), ViewContainer {
 
-    override val context = this
-    val router = Router()
+    lateinit var goBack: () -> Unit
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        router.initializeContainer(this)
+    override val context = this
+
+    override fun setOnBackPressListener(goBack: () -> Unit) {
+        this.goBack = goBack
     }
 
     override fun drawView(view: View) {
@@ -24,7 +22,9 @@ class BaseActivity: AppCompatActivity(), ViewContainer {
     }
 
     override fun onBackPressed() {
-        router.goBack()
+        goBack.invoke()
     }
+
+    override fun finish() = super.finish()
 
 }

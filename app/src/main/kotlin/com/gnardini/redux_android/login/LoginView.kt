@@ -7,14 +7,17 @@ import android.widget.LinearLayout
 import com.gnardini.redux_android.Store
 import com.gnardini.redux_android.login.LoginAction.EmailChanged
 import com.gnardini.redux_android.login.LoginAction.PasswordChanged
+import com.gnardini.redux_android.repository.UsersRepository
 import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
 
-class LoginView(val store: Store<LoginState, LoginAction>, context: Context) :
-        FrameLayout(context) {
+class LoginView(
+        val store: Store<LoginState, LoginAction>,
+        usersRepository: UsersRepository,
+        context: Context) : FrameLayout(context) {
 
     init {
-        store.hookMiddleware(loginMiddleware())
+        store.bindMiddleware(loginMiddleware(usersRepository))
         store.subscribe { stateUpdated() }
         populateView()
     }

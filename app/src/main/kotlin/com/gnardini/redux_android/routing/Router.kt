@@ -1,15 +1,19 @@
 package com.gnardini.redux_android.routing
 
+import com.gnardini.redux_android.injector.NetworkInjector
 import java.util.*
 
-class Router {
+class Router(
+        val viewContainer: ViewContainer,
+        val networkInjector: NetworkInjector) {
 
     val viewHistory: Stack<ViewKey> = Stack()
 
-    lateinit var viewContainer: ViewContainer
+    fun bindOnBackListener() {
+        viewContainer.setOnBackPressListener(goBackListener())
+    }
 
-    fun initializeContainer(viewContainer: ViewContainer) {
-        this.viewContainer = viewContainer
+    fun showInitialView() {
         showView(ViewKey.LOGIN)
     }
 
@@ -19,12 +23,12 @@ class Router {
         viewContainer.drawView(viewToShow)
     }
 
-    fun goBack() {
+    fun goBackListener(): () -> Unit = {
         if (viewHistory.size == 1) {
             viewContainer.finish()
         } else {
             viewHistory.pop()
-            showView(viewHistory.peek())
+            showView(viewHistory.pop())
         }
     }
 

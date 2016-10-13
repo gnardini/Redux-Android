@@ -19,7 +19,7 @@ class Store<StateType: State, ActionType: Action>(
         subscribers.forEach { it.invoke(this.state) }
     }
 
-    fun hookMiddleware(middleware: (Store<StateType, ActionType>, ActionType) -> Unit) {
+    fun bindMiddleware(middleware: (Store<StateType, ActionType>, ActionType) -> Unit) {
         this.middleware.add(middleware)
     }
 
