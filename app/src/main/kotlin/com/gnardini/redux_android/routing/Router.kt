@@ -1,11 +1,8 @@
 package com.gnardini.redux_android.routing
 
-import com.gnardini.redux_android.injector.NetworkInjector
 import java.util.*
 
-class Router(
-        val viewContainer: ViewContainer,
-        val networkInjector: NetworkInjector) {
+class Router(val viewContainer: ViewContainer, val viewFactory: ViewFactory) {
 
     val viewHistory: Stack<ViewKey> = Stack()
 
@@ -19,7 +16,7 @@ class Router(
 
     fun showView(viewKey: ViewKey) {
         viewHistory.push(viewKey)
-        val viewToShow = viewKey.viewFactory.invoke(this)
+        val viewToShow = viewKey.viewFactory(viewFactory, this)
         viewContainer.drawView(viewToShow)
     }
 

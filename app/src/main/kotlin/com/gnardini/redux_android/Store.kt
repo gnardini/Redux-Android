@@ -7,16 +7,16 @@ import rx.Observable
 import rx.subjects.BehaviorSubject
 
 class Store<StateType: State, ActionType: Action>(
-        val reducer: Reducer<StateType, ActionType>) {
+        private val reducer: Reducer<StateType, ActionType>,
+        private var state: StateType) {
 
-    private var state: StateType = reducer.initialState
     private val stateObserver = BehaviorSubject.create(state)
     private val middleware = mutableListOf<(Store<StateType, ActionType>, ActionType) -> Unit>()
 
     fun dispatchAction(action: ActionType) {
         middleware.forEach { it.invoke(this, action) }
 
-        state = reducer.update(state, action)
+        state = reducer.reduce(state, action)
 
         stateObserver.onNext(state)
     }

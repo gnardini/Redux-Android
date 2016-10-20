@@ -1,5 +1,6 @@
-package com.gnardini.redux_android.base
+package com.gnardini.redux_android.ui
 
+import android.R
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,7 @@ class BaseActivity: AppCompatActivity(), ViewContainer {
     }
 
     override fun drawView(view: View) {
-        val container = findViewById(android.R.id.content) as ViewGroup
+        val container = findViewById(R.id.content) as ViewGroup
         container.removeAllViews()
         container.addView(view)
     }

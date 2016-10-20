@@ -1,13 +1,11 @@
-package com.gnardini.redux_android.login
+package com.gnardini.redux_android.ui.login
 
 import com.gnardini.redux_android.base.Reducer
-import com.gnardini.redux_android.login.LoginAction.*
+import com.gnardini.redux_android.ui.login.LoginAction.*
 
-class LoginReducer(override val initialState: LoginState =
-                        LoginState(emailText = "", passwordText = "")):
-        Reducer<LoginState, LoginAction> {
+class LoginReducer: Reducer<LoginState, LoginAction> {
 
-    override fun update(state: LoginState, action: LoginAction): LoginState {
+    override fun reduce(state: LoginState, action: LoginAction): LoginState {
         return when (action) {
             is LoginPressed -> onLoginPressed(state)
             is EmailChanged -> onEmailUpdated(state, action.email)

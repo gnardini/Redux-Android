@@ -1,17 +1,14 @@
-package com.gnardini.redux_android.pick_friends
+package com.gnardini.redux_android.ui.pick_friends
 
 import com.gnardini.redux_android.base.Action
 import com.gnardini.redux_android.base.Reducer
 import com.gnardini.redux_android.base.State
 import com.gnardini.redux_android.model.Person
-import com.gnardini.redux_android.pick_friends.PickFriendsReducer.PickFriendsAction
-import com.gnardini.redux_android.pick_friends.PickFriendsReducer.PickFriendsAction.*
-import com.gnardini.redux_android.pick_friends.PickFriendsReducer.PickFriendsState
-import java.util.*
+import com.gnardini.redux_android.ui.pick_friends.PickFriendsReducer.PickFriendsAction
+import com.gnardini.redux_android.ui.pick_friends.PickFriendsReducer.PickFriendsAction.*
+import com.gnardini.redux_android.ui.pick_friends.PickFriendsReducer.PickFriendsState
 
-class PickFriendsReducer(override val initialState: PickFriendsState =
-                              PickFriendsState(LinkedList())) :
-        Reducer<PickFriendsState, PickFriendsAction> {
+class PickFriendsReducer: Reducer<PickFriendsState, PickFriendsAction> {
 
     data class PersonState(val person: Person, val selected: Boolean)
 
@@ -25,7 +22,7 @@ class PickFriendsReducer(override val initialState: PickFriendsState =
         class PersonChosen(val personState: PersonState, val selected: Boolean) : PickFriendsAction()
     }
 
-    override fun update(state: PickFriendsState, action: PickFriendsAction): PickFriendsState {
+    override fun reduce(state: PickFriendsState, action: PickFriendsAction): PickFriendsState {
         return when (action) {
             is FetchPeople -> state
             is RefreshPeopleList -> state

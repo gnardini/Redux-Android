@@ -1,28 +1,40 @@
 package com.gnardini.redux_android.routing
 
 import com.gnardini.redux_android.Store
-import com.gnardini.redux_android.login.LoginAction
-import com.gnardini.redux_android.login.LoginReducer
-import com.gnardini.redux_android.login.LoginView
+import com.gnardini.redux_android.injector.NetworkInjector
 import com.gnardini.redux_android.middleware.logSubscription
-import com.gnardini.redux_android.pick_friends.PickFriendsReducer
-import com.gnardini.redux_android.pick_friends.PickFriendsView
+import com.gnardini.redux_android.ui.login.LoginMiddleware
+import com.gnardini.redux_android.ui.login.LoginReducer
+import com.gnardini.redux_android.ui.login.LoginState
+import com.gnardini.redux_android.ui.login.LoginView
+import com.gnardini.redux_android.ui.pick_friends.PickFriendsMiddleware
+import com.gnardini.redux_android.ui.pick_friends.PickFriendsReducer
+import com.gnardini.redux_android.ui.pick_friends.PickFriendsReducer.PickFriendsState
+import com.gnardini.redux_android.ui.pick_friends.PickFriendsView
+import java.util.*
 
-fun Router.loginView(): LoginView {
-    val store = Store(LoginReducer())
-    store.observeState().subscribe(logSubscription())
+class ViewFactory(
+        val viewContainer: ViewContainer,
+        val networkInjector: NetworkInjector) {
 
-    store.bindMiddleware { store, action ->
-        if (action is LoginAction.LoginSuccess) {
-            showView(ViewKey.PICK_FRIENDS)
-        }
+    fun loginView(router: Router): LoginView {
+        val store = Store(LoginReducer(), LoginState(emailText = "", passwordText = ""))
+        store.observeState().subscribe(logSubscription())
+        store.bindMiddleware(LoginMiddleware.loginNavigation(router))
+        store.bindMiddleware(LoginMiddleware.loginRequests(networkInjector.usersRepository))
+        return LoginView(store, viewContainer.context)
     }
 
-    return LoginView(store, networkInjector.usersRepository, viewContainer.context)
-}
+    fun pickFriendsView(router: Router): PickFriendsView {
+        val store = Store(PickFriendsReducer(), PickFriendsState(LinkedList()))
+        val pickFriendsView = PickFriendsView(store, viewContainer.context)
 
-fun Router.pickFriendsView(): PickFriendsView {
-    val store = Store(PickFriendsReducer())
-    store.observeState().subscribe(logSubscription())
-    return PickFriendsView(store, networkInjector.usersRepository, viewContainer.context)
+        store.observeState().subscribe(logSubscription())
+        store.bindMiddleware(PickFriendsMiddleware.peopleFetcher(networkInjector.usersRepository))
+        store.bindMiddleware(PickFriendsMiddleware.peopleListRefresher(pickFriendsView))
+
+        store.dispatchAction(PickFriendsReducer.PickFriendsAction.FetchPeople)
+        return pickFriendsView
+    }
+
 }

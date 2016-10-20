@@ -1,4 +1,4 @@
-package com.gnardini.redux_android.extension
+package com.gnardini.redux_android.utils
 
 import android.app.Activity
 import android.app.Application

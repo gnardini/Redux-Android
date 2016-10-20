@@ -1,4 +1,4 @@
-package com.gnardini.redux_android.login
+package com.gnardini.redux_android.ui.login
 
 import com.gnardini.redux_android.base.State
 

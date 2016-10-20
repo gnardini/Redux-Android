@@ -1,32 +1,34 @@
-package com.gnardini.redux_android.login
+package com.gnardini.redux_android.ui.login
 
 import android.content.Context
 import android.graphics.Color
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.gnardini.redux_android.Store
-import com.gnardini.redux_android.login.LoginAction.EmailChanged
-import com.gnardini.redux_android.login.LoginAction.PasswordChanged
-import com.gnardini.redux_android.repository.UsersRepository
+import com.gnardini.redux_android.ui.login.LoginAction.EmailChanged
+import com.gnardini.redux_android.ui.login.LoginAction.PasswordChanged
 import rx.Subscription
 import trikita.anvil.Anvil
 import trikita.anvil.DSL.*
 
 class LoginView(
         val store: Store<LoginState, LoginAction>,
-        usersRepository: UsersRepository,
         context: Context) : FrameLayout(context) {
 
     val stateSubscription: Subscription
 
     init {
-        store.bindMiddleware(loginMiddleware(usersRepository))
         stateSubscription = store.observeState().subscribe { state -> stateUpdated() }
         populateView()
     }
 
     fun stateUpdated() {
         Anvil.render()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        stateSubscription.unsubscribe()
     }
 
     fun populateView() {
@@ -67,11 +69,6 @@ class LoginView(
                 }
             }
         }
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        stateSubscription.unsubscribe()
     }
 
 }
