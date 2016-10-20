@@ -23,7 +23,7 @@ class BaseActivity: AppCompatActivity(), ViewContainer {
     }
 
     override fun onBackPressed() {
-        goBack.invoke()
+        goBack()
     }
 
     override fun finish() = super.finish()

@@ -14,7 +14,7 @@ class Store<StateType: State, ActionType: Action>(
     private val middleware = mutableListOf<(Store<StateType, ActionType>, ActionType) -> Unit>()
 
     fun dispatchAction(action: ActionType) {
-        middleware.forEach { it.invoke(this, action) }
+        middleware.forEach { it(this, action) }
 
         state = reducer.reduce(state, action)
 

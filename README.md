@@ -1,6 +1,6 @@
 ## Redux Android
 
-Despite the repo's name, this is not a strict Redux implementation. It's an implementation of a design pattern heavily inspired by Elm and Redux ideas.
+Despite the repo's name, this is not a strict Redux implementation. It's an implementation of a design pattern that uses a unidirectional data flow heavily inspired by Elm and Redux ideas.
 
 - [Redux](http://redux.js.org/)
 - [Elm architecture](https://guide.elm-lang.org/architecture/)
@@ -33,4 +33,4 @@ In charge of managing this, and pushing new views to be shown is the [Router](ht
 - Add tests.
 - Add state time travel.
 - Add enhanced crash reporting.
-
+- Add a dispatcher to prevent actions being emitted before the last one is completely processed.
